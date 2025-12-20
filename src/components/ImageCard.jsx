@@ -11,6 +11,8 @@ const ImageCard = ({ image, prompt, onClick }) => {
                     alt="AI Generated"
                     loading="lazy"
                     className="card-image"
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable="false"
                 />
                 <div className="image-overlay">
                     <span>View Fullscreen</span>

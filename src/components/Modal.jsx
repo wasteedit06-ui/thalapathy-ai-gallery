@@ -23,7 +23,13 @@ const Modal = ({ image, prompt, onClose }) => {
                     <X size={24} />
                 </button>
                 <div className="modal-image-container">
-                    <img src={image} alt="Fullscreen" className="modal-image" />
+                    <img
+                        src={image}
+                        alt="Fullscreen"
+                        className="modal-image"
+                        onContextMenu={(e) => e.preventDefault()}
+                        draggable="false"
+                    />
                 </div>
                 <div className="modal-prompt">
                     <h3>Prompt</h3>
