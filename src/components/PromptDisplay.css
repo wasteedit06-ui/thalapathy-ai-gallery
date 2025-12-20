@@ -1,0 +1,73 @@
+.prompt-display {
+    padding: var(--spacing-md);
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prompt-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.copy-button {
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.copy-button:hover {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.prompt-content-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.prompt-text {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.prompt-display.expanded .prompt-text {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.expand-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 500;
+    align-self: flex-start;
+    padding: 4px 0;
+}
+
+.expand-button:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
