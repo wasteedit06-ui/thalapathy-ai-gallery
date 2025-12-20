@@ -22,7 +22,8 @@ const Modal = ({ image, prompt, onClose }) => {
                 <button className="modal-close" onClick={onClose}>
                     <X size={24} />
                 </button>
-                <div className="modal-image-container">
+                <div className="modal-image-container" style={{ position: 'relative' }}>
+                    <div className="watermark" style={{ fontSize: '4rem', zIndex: 20 }}>THALAPATHY AI</div>
                     <img
                         src={image}
                         alt="Fullscreen"

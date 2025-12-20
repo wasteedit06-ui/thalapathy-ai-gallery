@@ -14,6 +14,7 @@ function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isBlurred, setIsBlurred] = useState(false);
 
   useEffect(() => {
     fetchCards();
@@ -72,9 +73,17 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     document.addEventListener('copy', handleCopy);
 
+    const handleFocus = () => setIsBlurred(false);
+    const handleBlur = () => setIsBlurred(true);
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('copy', handleCopy);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
     };
   }, []);
 
@@ -103,7 +112,7 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app" style={{ filter: isBlurred ? 'blur(20px)' : 'none', transition: 'filter 0.3s ease' }}>
       <header style={{
         padding: '2rem',
         display: 'flex',

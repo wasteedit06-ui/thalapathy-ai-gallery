@@ -6,6 +6,7 @@ const ImageCard = ({ image, prompt, onClick }) => {
     return (
         <div className="image-card" onClick={onClick}>
             <div className="image-wrapper">
+                <div className="watermark">THALAPATHY AI</div>
                 <img
                     src={image}
                     alt="AI Generated"
