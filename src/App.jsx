@@ -33,6 +33,51 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Screenshot prevention
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Print Screen
+      if (e.key === 'PrintScreen') {
+        navigator.clipboard.writeText(''); // Clear clipboard (best effort)
+        alert('Screenshots are disabled on this platform.');
+        return;
+      }
+
+      // Ctrl+P (Print)
+      if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        alert('Printing is disabled.');
+        return;
+      }
+
+      // Ctrl+Shift+I (DevTools) - Optional deterrent
+      if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+        e.preventDefault();
+        return;
+      }
+
+      // Ctrl+S (Save)
+      if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        return;
+      }
+    };
+
+    // Disable standard copy clipboard if not allowed
+    const handleCopy = (e) => {
+      // Optional: You could allow copying prompts but not images, 
+      // but images are handled by oncontextmenu in components.
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('copy', handleCopy);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('copy', handleCopy);
+    };
+  }, []);
+
   const fetchCards = async () => {
     try {
       const { data, error } = await supabase

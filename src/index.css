@@ -38,6 +38,12 @@ body {
   min-height: 100vh;
 }
 
+@media print {
+  body {
+    display: none;
+  }
+}
+
 img {
   max-width: 100%;
   display: block;
