@@ -118,6 +118,26 @@ function App() {
     await supabase.auth.signOut();
   };
 
+  const [isMigrating, setIsMigrating] = useState(false);
+  const handleMigration = async () => {
+    setIsMigrating(true);
+    try {
+      const { error } = await supabase
+        .from('cards')
+        .update({ category: 'Leo' })
+        .is('category', null);
+
+      if (error) throw error;
+      alert('All existing images moved to Leo category successfully!');
+      fetchCards();
+    } catch (err) {
+      console.error('Migration error:', err);
+      alert('Failed to migrate: ' + err.message);
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -351,33 +371,71 @@ function App() {
 
 
         {session && (
-          <button
-            onClick={() => setIsUploadModalOpen(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))',
-              color: 'var(--bg-midnight)',
-              padding: '1rem 2.2rem',
-              borderRadius: '18px',
-              fontWeight: '800',
-              fontSize: '1.1rem',
-              boxShadow: '0 10px 30px rgba(245, 185, 66, 0.4)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.05) translateY(-5px)';
-              e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 185, 66, 0.6)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1) translateY(0)';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 185, 66, 0.4)';
-            }}
-          >
-            <Plus size={24} strokeWidth={3} /> Create New Masterpiece
-          </button>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1.5rem' }}>
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))',
+                color: 'var(--bg-midnight)',
+                padding: '1rem 2.2rem',
+                borderRadius: '18px',
+                fontWeight: '800',
+                fontSize: '1.1rem',
+                boxShadow: '0 10px 30px rgba(245, 185, 66, 0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'scale(1.05) translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 185, 66, 0.6)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 185, 66, 0.4)';
+              }}
+            >
+              <Plus size={24} strokeWidth={3} /> Create New Masterpiece
+            </button>
+
+            <button
+              onClick={handleMigration}
+              disabled={isMigrating}
+              className="glass"
+              style={{
+                padding: '1rem 2.2rem',
+                borderRadius: '18px',
+                fontWeight: '700',
+                color: 'var(--primary-gold)',
+                border: '1px solid var(--border-gold)',
+                background: 'rgba(212, 175, 55, 0.1)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                opacity: isMigrating ? 0.5 : 1
+              }}
+              onMouseEnter={e => {
+                if (!isMigrating) {
+                  e.currentTarget.style.background = 'var(--primary-gold)';
+                  e.currentTarget.style.color = 'var(--bg-midnight)';
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isMigrating) {
+                  e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
+                  e.currentTarget.style.color = 'var(--primary-gold)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
+            >
+              {isMigrating ? 'Moving Images...' : '🚀 Move to Leo Category'}
+            </button>
+          </div>
         )}
       </header>
 
