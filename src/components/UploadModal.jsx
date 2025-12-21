@@ -4,8 +4,11 @@ import { supabase } from '../supabaseClient';
 import './UploadModal.css';
 import watermarkImg from '../assets/watermark.png';
 
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'Other'];
+
 const UploadModal = ({ onClose, onUploadSuccess }) => {
     const [prompt, setPrompt] = useState('');
+    const [category, setCategory] = useState('GOAT');
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -51,7 +54,7 @@ const UploadModal = ({ onClose, onUploadSuccess }) => {
             const { data, error: dbError } = await supabase
                 .from('cards')
                 .insert([
-                    { prompt: prompt, image_url: publicUrl }
+                    { prompt: prompt, image_url: publicUrl, category: category }
                 ])
                 .select();
 
@@ -108,6 +111,19 @@ const UploadModal = ({ onClose, onUploadSuccess }) => {
                                 className="file-input"
                             />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Movie Category</label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="category-select"
+                        >
+                            {MOVIES.map(movie => (
+                                <option key={movie} value={movie}>{movie}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="form-group">

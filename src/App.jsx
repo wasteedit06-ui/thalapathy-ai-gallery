@@ -7,14 +7,21 @@ import UploadModal from './components/UploadModal';
 import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
+const MOVIES = ['All', 'GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time'];
+
 function App() {
   const [cards, setCards] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [selectedCard, setSelectedCard] = useState(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBlurred, setIsBlurred] = useState(false);
+
+  const filteredCards = activeCategory === 'All'
+    ? cards
+    : cards.filter(card => card.category === activeCategory);
 
   useEffect(() => {
     fetchCards();
@@ -274,11 +281,73 @@ function App() {
             fontWeight: '500',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            opacity: 0.8
+            opacity: 0.8,
+            marginBottom: '1rem'
           }}>
             GK Creation Collection
           </p>
         </div>
+
+        {/* Cinematic Movie Categories */}
+        <nav style={{
+          display: 'flex',
+          gap: '0.8rem',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          maxWidth: '1200px',
+          margin: '2rem auto 0',
+          padding: '0.5rem',
+          maxHeight: isScrolled ? '0' : '500px',
+          opacity: isScrolled ? 0 : 1,
+          overflow: 'hidden',
+          transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          pointerEvents: isScrolled ? 'none' : 'auto'
+        }}>
+          {MOVIES.map(movie => (
+            <button
+              key={movie}
+              onClick={() => setActiveCategory(movie)}
+              className="glass"
+              style={{
+                padding: '0.6rem 1.4rem',
+                borderRadius: '50px',
+                fontSize: '0.8rem',
+                fontWeight: '800',
+                color: activeCategory === movie ? 'var(--bg-midnight)' : 'var(--primary-gold)',
+                background: activeCategory === movie
+                  ? 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))'
+                  : 'var(--bg-glass)',
+                border: activeCategory === movie
+                  ? 'none'
+                  : '1px solid var(--border-gold)',
+                cursor: 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                boxShadow: activeCategory === movie
+                  ? '0 8px 25px rgba(212, 175, 55, 0.4)'
+                  : 'none',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                fontFamily: 'var(--font-royal)'
+              }}
+              onMouseEnter={e => {
+                if (activeCategory !== movie) {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.borderColor = 'var(--primary-gold)';
+                  e.currentTarget.style.boxShadow = '0 5px 15px rgba(212, 175, 55, 0.2)';
+                }
+              }}
+              onMouseLeave={e => {
+                if (activeCategory !== movie) {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'var(--border-gold)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }
+              }}
+            >
+              {movie}
+            </button>
+          ))}
+        </nav>
 
 
         {session && (
@@ -345,7 +414,7 @@ function App() {
                 CHANNELLING ROYAL ENERGY...
               </span>
             </div>
-          ) : cards.length === 0 ? (
+          ) : filteredCards.length === 0 ? (
             <div style={{
               textAlign: 'center',
               padding: '10rem 2rem',
@@ -355,12 +424,14 @@ function App() {
               border: '1px dashed var(--border-glass)',
               backdropFilter: 'blur(10px)'
             }}>
-              <p style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'white' }}>The royal vault is currently empty.</p>
+              <p style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'white' }}>
+                {activeCategory === 'All' ? 'The royal vault is currently empty.' : `No masterpieces in ${activeCategory} yet.`}
+              </p>
               {session && <p>Begin the legacy by clicking "Create New Masterpiece".</p>}
             </div>
           ) : (
             <Grid>
-              {cards.map((item, index) => (
+              {filteredCards.map((item, index) => (
                 <ImageCard
                   key={item.id}
                   image={item.image_url}
