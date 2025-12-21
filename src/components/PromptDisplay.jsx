@@ -1,50 +1,67 @@
-import React, { useState } from 'react';
-import { Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Copy, ChevronDown, ChevronUp, Check, Eye } from 'lucide-react';
 import './PromptDisplay.css';
 
 const PromptDisplay = ({ prompt }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    if (isExpanded && displayedText.length < prompt.length) {
+      setIsTyping(true);
+      const timer = setTimeout(() => {
+        setDisplayedText(prompt.slice(0, displayedText.length + 1));
+      }, 15);
+      return () => clearTimeout(timer);
+    } else {
+      setIsTyping(false);
+    }
+  }, [isExpanded, displayedText, prompt]);
 
   const handleCopy = (e) => {
     e.stopPropagation();
     navigator.clipboard.writeText(prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   const toggleExpand = (e) => {
     e.stopPropagation();
+    if (!isExpanded) setDisplayedText('');
     setIsExpanded(!isExpanded);
   };
 
   return (
     <div className={`prompt-display ${isExpanded ? 'expanded' : ''}`}>
       <div className="prompt-header">
-        <span className="prompt-label">Image Prompt</span>
-        <button 
-          className="copy-button" 
+        <span className="prompt-label">Generation Prompt</span>
+        <button
+          className={`copy-btn ${isCopied ? 'copied' : ''}`}
           onClick={handleCopy}
-          aria-label="Copy prompt"
+          title="Copy Prompt"
         >
-          {copied ? <Check size={16} color="#10b981" /> : <Copy size={16} />}
+          {isCopied ? <Check size={16} /> : <Copy size={16} />}
         </button>
       </div>
-      
+
       <div className="prompt-content-wrapper">
         <p className="prompt-text">
-          {prompt}
+          {isExpanded ? displayedText : prompt}
+          {isTyping && <span className="type-cursor">|</span>}
         </p>
       </div>
 
-      <button className="expand-button" onClick={toggleExpand}>
+      <button className="action-button-main" onClick={toggleExpand}>
+        <div className="btn-glow"></div>
         {isExpanded ? (
           <>
-            Show Less <ChevronUp size={14} />
+            <ChevronUp size={18} /> Hide Prompt
           </>
         ) : (
           <>
-            Read More <ChevronDown size={14} />
+            <Eye size={18} /> View Prompt
           </>
         )}
       </button>

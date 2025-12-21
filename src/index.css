@@ -1,48 +1,106 @@
-:root {
-  /* Colors */
-  --bg-primary: #f8f9fa;
-  --bg-card: #ffffff;
-  --text-primary: #1a1a1a;
-  --text-secondary: #666666;
-  --accent-color: #2563eb;
-  --accent-hover: #1d4ed8;
-  --border-color: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap');
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+:root {
+  /* Golden Empire Color Palette */
+  --bg-midnight: #0D0907;
+  /* Deepest Espresso */
+  --bg-obsidian: #1A120B;
+  /* Dark Chocolate */
+  --primary-gold: #D4AF37;
+  /* Classic Royal Gold */
+  --accent-bronze: #8B4513;
+  /* Saddle Brown / Bronze */
+  --accent-amber: #FFBF00;
+  /* Amber Glow */
+  --accent-cream: #F5EBE0;
+  /* Soft highlight */
+
+  --bg-glass: rgba(255, 255, 255, 0.02);
+  --bg-glass-heavy: rgba(13, 9, 7, 0.95);
+
+  --text-primary: #F5EBE0;
+  --text-secondary: #D4AF37;
+  --text-muted: #6B4E31;
+
+  --border-glass: rgba(212, 175, 55, 0.15);
+  --border-gold: rgba(212, 175, 55, 0.3);
+  --border-bronze: rgba(139, 69, 19, 0.3);
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-royal: 'Cinzel', serif;
+  --font-body: 'Poppins', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+
+  /* Effects */
+  --glass-blur: blur(20px);
+  --shadow-gold: 0 0 30px rgba(212, 175, 55, 0.25);
+  --shadow-bronze: 0 10px 40px rgba(139, 69, 19, 0.2);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes bgGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-primary);
+  font-family: var(--font-body);
+  background-color: var(--bg-midnight);
+  background-image:
+    linear-gradient(-45deg, #0D0907, #1A120B, #2C1810, #0D0907);
+  background-size: 400% 400%;
+  animation: bgGradient 15s ease infinite;
+  background-attachment: fixed;
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-@media print {
-  body {
-    display: none;
+/* Floating Ember Animation */
+@keyframes emberFloat {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(-100vh) translateX(50px) rotate(360deg);
+    opacity: 0;
   }
 }
+
+.ember {
+  position: fixed;
+  bottom: -10px;
+  background: var(--primary-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(2px);
+  animation: emberFloat linear infinite;
+}
+
 
 img {
   max-width: 100%;
@@ -54,23 +112,32 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-glass);
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--bg-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: var(--border-glass);
+  border-radius: 5px;
+  border: 2px solid var(--bg-dark);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--primary);
 }

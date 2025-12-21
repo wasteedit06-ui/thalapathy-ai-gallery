@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, LogIn, LogOut } from 'lucide-react';
+import { Plus, LogIn, LogOut, Instagram } from 'lucide-react';
 import Grid from './components/Grid';
 import ImageCard from './components/ImageCard';
 import Modal from './components/Modal';
@@ -111,30 +111,104 @@ function App() {
     await supabase.auth.signOut();
   };
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="app" style={{ filter: isBlurred ? 'blur(20px)' : 'none', transition: 'filter 0.3s ease' }}>
-      <header style={{
-        padding: '2rem',
+    <div className="app sweep-container" style={{
+      filter: isBlurred ? 'blur(20px)' : 'none',
+      transition: 'filter 0.5s ease',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      {/* Cinematic Background Effects */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: -1,
+        pointerEvents: 'none',
+        overflow: 'hidden'
+      }}>
+        {/* Golden Dust Particles */}
+        {[...Array(20)].map((_, i) => (
+          <div key={`p-${i}`} className="float" style={{
+            position: 'absolute',
+            width: Math.random() * 2 + 'px',
+            height: Math.random() * 2 + 'px',
+            background: 'var(--primary-gold)',
+            borderRadius: '50%',
+            top: Math.random() * 100 + '%',
+            left: Math.random() * 100 + '%',
+            opacity: 0.15,
+            animationDelay: Math.random() * 5 + 's',
+            animationDuration: (Math.random() * 10 + 8) + 's'
+          }}></div>
+        ))}
+        {/* Fire Embers */}
+        {[...Array(10)].map((_, i) => (
+          <div key={`e-${i}`} className="ember" style={{
+            left: Math.random() * 100 + '%',
+            width: (Math.random() * 4 + 2) + 'px',
+            height: (Math.random() * 4 + 2) + 'px',
+            animationDuration: (Math.random() * 5 + 5) + 's',
+            animationDelay: Math.random() * 10 + 's',
+            boxShadow: '0 0 10px var(--accent-ember)'
+          }}></div>
+        ))}
+      </div>
+
+
+      <header className="glass" style={{
+        padding: isScrolled ? '0.8rem 1.5rem' : '2rem 1.5rem 1.5rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '1rem',
-        position: 'relative'
+        gap: isScrolled ? '0.8rem' : '1.5rem',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 1000,
+        borderBottom: '1px solid var(--border-glass)',
+        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
-        <div style={{ position: 'absolute', top: '2rem', right: '2rem' }}>
+        <div style={{
+          position: 'absolute',
+          top: '1.5rem',
+          right: '1.5rem'
+        }}>
           {session ? (
             <button
               onClick={handleLogout}
+              className="glass"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                backgroundColor: 'var(--bg-card)',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '12px',
                 color: 'var(--text-secondary)',
-                border: '1px solid var(--border-color)',
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
+                fontWeight: '600'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = 'var(--secondary)';
+                e.currentTarget.style.borderColor = 'var(--secondary)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border-glass)';
               }}
             >
               <LogOut size={16} /> Logout
@@ -142,28 +216,70 @@ function App() {
           ) : (
             <button
               onClick={() => setIsLoginModalOpen(true)}
+              className="glass"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                backgroundColor: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-color)',
+                padding: '0.7rem 1.4rem',
+                borderRadius: '14px',
+                color: 'var(--primary-gold)',
+                borderColor: 'var(--border-gold)',
                 fontSize: '0.9rem',
-                fontWeight: '500'
+                fontWeight: '700',
+                boxShadow: '0 0 15px rgba(212, 175, 55, 0.1)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(212, 175, 55, 0.3)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.borderColor = 'var(--primary-gold)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.1)';
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.borderColor = 'var(--border-gold)';
               }}
             >
-              <LogIn size={16} /> Admin Login
+              <LogIn size={18} strokeWidth={2.5} /> Admin Portal
             </button>
           )}
         </div>
 
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Thalapathy AI Image Prompt</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Explore the prompts behind the imagination</p>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '900px',
+          maxHeight: isScrolled ? '0' : '200px',
+          opacity: isScrolled ? 0 : 1,
+          transform: isScrolled ? 'translateY(-20px)' : 'translateY(0)',
+          overflow: 'hidden',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          pointerEvents: isScrolled ? 'none' : 'auto'
+        }}>
+          <h1 className="shimmer-text" style={{
+            fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
+            fontWeight: '900',
+            marginBottom: '0.5rem',
+            fontFamily: 'var(--font-royal)',
+            letterSpacing: '0.05em',
+            lineHeight: 1.1,
+            filter: 'drop-shadow(0 0 20px rgba(245, 185, 66, 0.3))'
+          }}>
+            Thalapathy AI Gallery
+          </h1>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '1.2rem',
+            fontWeight: '500',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            opacity: 0.8
+          }}>
+            GK Creation Collection
+          </p>
         </div>
+
 
         {session && (
           <button
@@ -171,45 +287,182 @@ function App() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'var(--accent-color)',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              fontWeight: '600',
-              boxShadow: 'var(--shadow-md)',
-              transition: 'transform 0.2s'
+              gap: '12px',
+              background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))',
+              color: 'var(--bg-midnight)',
+              padding: '1rem 2.2rem',
+              borderRadius: '18px',
+              fontWeight: '800',
+              fontSize: '1.1rem',
+              boxShadow: '0 10px 30px rgba(245, 185, 66, 0.4)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
             }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.05) translateY(-5px)';
+              e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 185, 66, 0.6)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1) translateY(0)';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 185, 66, 0.4)';
+            }}
           >
-            <Plus size={20} /> Add New
+            <Plus size={24} strokeWidth={3} /> Create New Masterpiece
           </button>
         )}
       </header>
 
-      <main>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
-            Loading gallery...
-          </div>
-        ) : cards.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
-            No images yet. Be the first to upload one!
-          </div>
-        ) : (
-          <Grid>
-            {cards.map((item) => (
-              <ImageCard
-                key={item.id}
-                image={item.image_url}
-                prompt={item.prompt}
-                onClick={() => setSelectedCard(item)}
-              />
-            ))}
-          </Grid>
-        )}
+      <main style={{ flex: 1, padding: '22rem 1.5rem 6rem' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          {loading ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10rem 2rem',
+              gap: '2rem'
+            }}>
+              <div className="loader" style={{
+                width: '60px',
+                height: '60px',
+                border: '4px solid var(--border-glass)',
+                borderTopColor: 'var(--primary-gold)',
+                borderRadius: '50%',
+                animation: 'spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite'
+              }}></div>
+              <style>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+              <span className="shimmer-text" style={{
+                fontWeight: '800',
+                letterSpacing: '0.3em',
+                fontSize: '1.2rem',
+                fontFamily: 'var(--font-royal)'
+              }}>
+                CHANNELLING ROYAL ENERGY...
+              </span>
+            </div>
+          ) : cards.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '10rem 2rem',
+              color: 'var(--text-secondary)',
+              background: 'var(--bg-glass)',
+              borderRadius: '32px',
+              border: '1px dashed var(--border-glass)',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <p style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'white' }}>The royal vault is currently empty.</p>
+              {session && <p>Begin the legacy by clicking "Create New Masterpiece".</p>}
+            </div>
+          ) : (
+            <Grid>
+              {cards.map((item, index) => (
+                <ImageCard
+                  key={item.id}
+                  image={item.image_url}
+                  prompt={item.prompt}
+                  onClick={() => setSelectedCard(item)}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                />
+              ))}
+            </Grid>
+          )}
+        </div>
       </main>
+
+      {/* Floating Action Mobile / Admin */}
+      {session && (
+        <button
+          onClick={() => setIsUploadModalOpen(true)}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-ember))',
+            color: 'var(--bg-midnight)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 10px 25px rgba(245, 185, 66, 0.5)',
+            zIndex: 1000
+          }}
+          className="float"
+        >
+          <Plus size={32} strokeWidth={3} />
+        </button>
+      )}
+
+      <footer className="glass" style={{
+        padding: '3rem',
+        textAlign: 'center',
+        marginTop: 'auto',
+        borderTop: '1px solid var(--border-glass)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '1.5rem'
+      }}>
+        <a
+          href="https://www.instagram.com/gkcreation_6/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="instagram-link"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            color: 'var(--primary-gold)',
+            textDecoration: 'none',
+            fontSize: '1.2rem',
+            fontWeight: '700',
+            fontFamily: 'var(--font-royal)',
+            letterSpacing: '0.1em',
+            padding: '1rem 2rem',
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-gold)',
+            borderRadius: '50px',
+            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'scale(1.1) translateY(-5px)';
+            e.currentTarget.style.boxShadow = '0 10px 30px rgba(212, 175, 55, 0.3)';
+            e.currentTarget.style.background = 'var(--primary-gold)';
+            e.currentTarget.style.color = 'var(--bg-midnight)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'scale(1) translateY(0)';
+            e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.1)';
+            e.currentTarget.style.background = 'var(--bg-glass)';
+            e.currentTarget.style.color = 'var(--primary-gold)';
+          }}
+        >
+          <Instagram size={24} />
+          <span>FOLLOW ON INSTAGRAM</span>
+        </a>
+
+        <div>
+          <p style={{
+            color: 'var(--primary-gold)',
+            fontSize: '1rem',
+            fontWeight: '700',
+            fontFamily: 'var(--font-royal)',
+            letterSpacing: '0.1em'
+          }}>
+            GK CREATION &copy; {new Date().getFullYear()}
+          </p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.7 }}>
+            Crafted for the future of digital sovereignty.
+          </p>
+        </div>
+      </footer>
 
       {selectedCard && (
         <Modal

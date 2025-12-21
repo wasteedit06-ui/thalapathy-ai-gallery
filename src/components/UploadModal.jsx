@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Upload, Loader } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './UploadModal.css';
+import watermarkImg from '../assets/watermark.png';
 
 const UploadModal = ({ onClose, onUploadSuccess }) => {
     const [prompt, setPrompt] = useState('');
@@ -80,7 +81,20 @@ const UploadModal = ({ onClose, onUploadSuccess }) => {
                         <label>Image</label>
                         <div className={`file-drop-area ${preview ? 'has-image' : ''}`}>
                             {preview ? (
-                                <img src={preview} alt="Preview" className="file-preview" />
+                                <>
+                                    <img src={watermarkImg} className="watermark-img" alt="watermark" style={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%) rotate(-25deg)',
+                                        width: '60%',
+                                        opacity: 0.6, /* Increased visibility */
+                                        pointerEvents: 'none',
+                                        zIndex: 10,
+                                        filter: 'brightness(0) invert(1) drop-shadow(0 4px 10px rgba(0,0,0,0.5))'
+                                    }} />
+                                    <img src={preview} alt="Preview" className="file-preview" />
+                                </>
                             ) : (
                                 <div className="file-placeholder">
                                     <Upload size={32} />
