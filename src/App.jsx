@@ -7,11 +7,11 @@ import UploadModal from './components/UploadModal';
 import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
-const MOVIES = ['All', 'GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time'];
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time'];
 
 function App() {
   const [cards, setCards] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('GOAT');
   const [selectedCard, setSelectedCard] = useState(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -19,9 +19,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isBlurred, setIsBlurred] = useState(false);
 
-  const filteredCards = activeCategory === 'All'
-    ? cards
-    : cards.filter(card => card.category === activeCategory);
+  const filteredCards = cards.filter(card => card.category === activeCategory);
 
   useEffect(() => {
     fetchCards();
@@ -196,24 +194,57 @@ function App() {
       </div>
 
 
-      <header className="glass" style={{
-        padding: isScrolled ? '0.8rem 1.5rem' : '2rem 1.5rem 1.5rem',
+      <header className={`glass ${isScrolled ? 'scrolled' : ''}`} style={{
+        padding: isScrolled ? '0.8rem 1.5rem' : '1.5rem',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        gap: isScrolled ? '0.8rem' : '1.5rem',
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         zIndex: 1000,
+        background: isScrolled ? 'var(--bg-glass-heavy)' : 'var(--bg-glass)',
         borderBottom: '1px solid var(--border-glass)',
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        backdropFilter: 'blur(25px)'
       }}>
         <div style={{
-          position: 'absolute',
-          top: '1.5rem',
-          right: '1.5rem'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start'
+        }}>
+          <h1 className="shimmer-text" style={{
+            fontSize: isScrolled ? '1.5rem' : '2.2rem',
+            fontWeight: '900',
+            fontFamily: 'var(--font-royal)',
+            letterSpacing: '0.05em',
+            lineHeight: 1.1,
+            margin: 0,
+            transition: 'all 0.4s ease'
+          }}>
+            Thalapathy AI Gallery
+          </h1>
+          {!isScrolled && (
+            <p style={{
+              color: 'var(--text-secondary)',
+              fontSize: '0.8rem',
+              fontWeight: '500',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              opacity: 0.8,
+              margin: 0
+            }}>
+              GK Creation Collection
+            </p>
+          )}
+        </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
         }}>
           {session ? (
             <button
@@ -273,174 +304,119 @@ function App() {
             </button>
           )}
         </div>
-
-        <div style={{
-          textAlign: 'center',
-          maxWidth: '900px',
-          maxHeight: isScrolled ? '0' : '200px',
-          opacity: isScrolled ? 0 : 1,
-          transform: isScrolled ? 'translateY(-20px)' : 'translateY(0)',
-          overflow: 'hidden',
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          pointerEvents: isScrolled ? 'none' : 'auto'
-        }}>
-          <h1 className="shimmer-text" style={{
-            fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
-            fontWeight: '900',
-            marginBottom: '0.5rem',
-            fontFamily: 'var(--font-royal)',
-            letterSpacing: '0.05em',
-            lineHeight: 1.1,
-            filter: 'drop-shadow(0 0 20px rgba(245, 185, 66, 0.3))'
-          }}>
-            Thalapathy AI Gallery
-          </h1>
-          <p style={{
-            color: 'var(--text-secondary)',
-            fontSize: '1.2rem',
-            fontWeight: '500',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            opacity: 0.8,
-            marginBottom: '1rem'
-          }}>
-            GK Creation Collection
-          </p>
-        </div>
-
-        {/* Cinematic Movie Categories */}
-        <nav style={{
-          display: 'flex',
-          gap: '0.8rem',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          maxWidth: '1200px',
-          margin: '2rem auto 0',
-          padding: '0.5rem',
-          maxHeight: isScrolled ? '0' : '500px',
-          opacity: isScrolled ? 0 : 1,
-          overflow: 'hidden',
-          transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-          pointerEvents: isScrolled ? 'none' : 'auto'
-        }}>
-          {MOVIES.map(movie => (
-            <button
-              key={movie}
-              onClick={() => setActiveCategory(movie)}
-              className="glass"
-              style={{
-                padding: '0.6rem 1.4rem',
-                borderRadius: '50px',
-                fontSize: '0.8rem',
-                fontWeight: '800',
-                color: activeCategory === movie ? 'var(--bg-midnight)' : 'var(--primary-gold)',
-                background: activeCategory === movie
-                  ? 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))'
-                  : 'var(--bg-glass)',
-                border: activeCategory === movie
-                  ? 'none'
-                  : '1px solid var(--border-gold)',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                boxShadow: activeCategory === movie
-                  ? '0 8px 25px rgba(212, 175, 55, 0.4)'
-                  : 'none',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontFamily: 'var(--font-royal)'
-              }}
-              onMouseEnter={e => {
-                if (activeCategory !== movie) {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.borderColor = 'var(--primary-gold)';
-                  e.currentTarget.style.boxShadow = '0 5px 15px rgba(212, 175, 55, 0.2)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (activeCategory !== movie) {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'var(--border-gold)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }
-              }}
-            >
-              {movie}
-            </button>
-          ))}
-        </nav>
-
-
-        {session && (
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1.5rem' }}>
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))',
-                color: 'var(--bg-midnight)',
-                padding: '1rem 2.2rem',
-                borderRadius: '18px',
-                fontWeight: '800',
-                fontSize: '1.1rem',
-                boxShadow: '0 10px 30px rgba(245, 185, 66, 0.4)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'scale(1.05) translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 185, 66, 0.6)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 185, 66, 0.4)';
-              }}
-            >
-              <Plus size={24} strokeWidth={3} /> Create New Masterpiece
-            </button>
-
-            <button
-              onClick={handleMigration}
-              disabled={isMigrating}
-              className="glass"
-              style={{
-                padding: '1rem 2.2rem',
-                borderRadius: '18px',
-                fontWeight: '700',
-                color: 'var(--primary-gold)',
-                border: '1px solid var(--border-gold)',
-                background: 'rgba(212, 175, 55, 0.1)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                opacity: isMigrating ? 0.5 : 1
-              }}
-              onMouseEnter={e => {
-                if (!isMigrating) {
-                  e.currentTarget.style.background = 'var(--primary-gold)';
-                  e.currentTarget.style.color = 'var(--bg-midnight)';
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (!isMigrating) {
-                  e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
-                  e.currentTarget.style.color = 'var(--primary-gold)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }
-              }}
-            >
-              {isMigrating ? 'Moving Images...' : '🚀 Move to Leo Category'}
-            </button>
-          </div>
-        )}
       </header>
 
-      <main style={{ flex: 1, padding: '22rem 1.5rem 6rem' }}>
+      <main style={{
+        flex: 1,
+        paddingTop: '100px',
+        paddingBottom: '4rem',
+        paddingLeft: '1.5rem',
+        paddingRight: '1.5rem',
+        transition: 'all 0.5s ease'
+      }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '4rem'
+          }}>
+            <h2 className="shimmer-text" style={{
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontWeight: '900',
+              fontFamily: 'var(--font-royal)',
+              letterSpacing: '0.05em',
+              marginBottom: '1rem'
+            }}>
+              {activeCategory} AI Image
+            </h2>
+            <div style={{
+              width: '80px',
+              height: '4px',
+              background: 'linear-gradient(90deg, transparent, var(--primary-gold), transparent)',
+              margin: '0 auto 2rem'
+            }}></div>
+          </div>
+
+          {/* Cinematic Movie Categories */}
+          <nav style={{
+            display: 'flex',
+            gap: '0.8rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            marginBottom: '3rem',
+            padding: '0.5rem',
+          }}>
+            {MOVIES.map(movie => (
+              <button
+                key={movie}
+                onClick={() => setActiveCategory(movie)}
+                className="glass"
+                style={{
+                  padding: '0.6rem 1.4rem',
+                  borderRadius: '50px',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
+                  color: activeCategory === movie ? 'var(--bg-midnight)' : 'var(--primary-gold)',
+                  background: activeCategory === movie
+                    ? 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))'
+                    : 'var(--bg-glass)',
+                  border: activeCategory === movie
+                    ? 'none'
+                    : '1px solid var(--border-gold)',
+                  cursor: 'pointer',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: activeCategory === movie
+                    ? '0 8px 25px rgba(212, 175, 55, 0.4)'
+                    : 'none',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  fontFamily: 'var(--font-royal)'
+                }}
+              >
+                {movie}
+              </button>
+            ))}
+          </nav>
+
+          {session && (
+            <div style={{
+              display: 'flex',
+              gap: '1.5rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              marginBottom: '4rem'
+            }}>
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-amber))',
+                  color: 'var(--bg-midnight)',
+                  padding: '1rem 2.2rem',
+                  borderRadius: '18px',
+                  fontWeight: '800',
+                  fontSize: '1.1rem',
+                  boxShadow: '0 10px 30px rgba(245, 185, 66, 0.4)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'scale(1.05) translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 185, 66, 0.6)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 185, 66, 0.4)';
+                }}
+              >
+                <Plus size={24} strokeWidth={3} /> Create New Masterpiece
+              </button>
+            </div>
+          )}
+
           {loading ? (
             <div style={{
               display: 'flex',
@@ -483,7 +459,7 @@ function App() {
               backdropFilter: 'blur(10px)'
             }}>
               <p style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'white' }}>
-                {activeCategory === 'All' ? 'The royal vault is currently empty.' : `No masterpieces in ${activeCategory} yet.`}
+                No masterpieces in {activeCategory} yet.
               </p>
               {session && <p>Begin the legacy by clicking "Create New Masterpiece".</p>}
             </div>
@@ -504,29 +480,31 @@ function App() {
       </main>
 
       {/* Floating Action Mobile / Admin */}
-      {session && (
-        <button
-          onClick={() => setIsUploadModalOpen(true)}
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-ember))',
-            color: 'var(--bg-midnight)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 10px 25px rgba(245, 185, 66, 0.5)',
-            zIndex: 1000
-          }}
-          className="float"
-        >
-          <Plus size={32} strokeWidth={3} />
-        </button>
-      )}
+      {
+        session && (
+          <button
+            onClick={() => setIsUploadModalOpen(true)}
+            style={{
+              position: 'fixed',
+              bottom: '2rem',
+              right: '2rem',
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, var(--primary-gold), var(--accent-ember))',
+              color: 'var(--bg-midnight)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 10px 25px rgba(245, 185, 66, 0.5)',
+              zIndex: 1000
+            }}
+            className="float"
+          >
+            <Plus size={32} strokeWidth={3} />
+          </button>
+        )
+      }
 
       <footer className="glass" style={{
         padding: '3rem',
@@ -593,30 +571,36 @@ function App() {
         </div>
       </footer>
 
-      {selectedCard && (
-        <Modal
-          image={selectedCard.image_url}
-          prompt={selectedCard.prompt}
-          onClose={() => setSelectedCard(null)}
-        />
-      )}
+      {
+        selectedCard && (
+          <Modal
+            image={selectedCard.image_url}
+            prompt={selectedCard.prompt}
+            onClose={() => setSelectedCard(null)}
+          />
+        )
+      }
 
-      {isUploadModalOpen && (
-        <UploadModal
-          onClose={() => setIsUploadModalOpen(false)}
-          onUploadSuccess={handleUploadSuccess}
-        />
-      )}
+      {
+        isUploadModalOpen && (
+          <UploadModal
+            onClose={() => setIsUploadModalOpen(false)}
+            onUploadSuccess={handleUploadSuccess}
+          />
+        )
+      }
 
-      {isLoginModalOpen && (
-        <LoginModal
-          onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={(user) => {
-            setSession({ user });
-          }}
-        />
-      )}
-    </div>
+      {
+        isLoginModalOpen && (
+          <LoginModal
+            onClose={() => setIsLoginModalOpen(false)}
+            onLoginSuccess={(user) => {
+              setSession({ user });
+            }}
+          />
+        )
+      }
+    </div >
   );
 }
 
