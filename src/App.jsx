@@ -116,6 +116,49 @@ function App() {
     await supabase.auth.signOut();
   };
 
+  const handleDelete = async (cardId) => {
+    try {
+      // Find the card to get the image URL
+      const cardToDelete = cards.find(card => card.id === cardId);
+      if (!cardToDelete) {
+        alert('Card not found');
+        return;
+      }
+
+      // Extract filename from URL
+      const imageUrl = cardToDelete.image_url;
+      const urlParts = imageUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+
+      // 1. Delete from Supabase Storage
+      const { error: storageError } = await supabase.storage
+        .from('images')
+        .remove([fileName]);
+
+      if (storageError) {
+        console.error('Storage deletion error:', storageError);
+        // Continue with database deletion even if storage fails
+      }
+
+      // 2. Delete from Database
+      const { error: dbError } = await supabase
+        .from('cards')
+        .delete()
+        .eq('id', cardId);
+
+      if (dbError) throw dbError;
+
+      // 3. Update local state
+      setCards(cards.filter(card => card.id !== cardId));
+      setSelectedCard(null);
+
+      alert('Image deleted successfully!');
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete image: ' + error.message);
+    }
+  };
+
   const [isMigrating, setIsMigrating] = useState(false);
   const handleMigration = async () => {
     setIsMigrating(true);
@@ -577,6 +620,9 @@ function App() {
             image={selectedCard.image_url}
             prompt={selectedCard.prompt}
             onClose={() => setSelectedCard(null)}
+            onDelete={handleDelete}
+            isAdmin={!!session}
+            cardId={selectedCard.id}
           />
         )
       }

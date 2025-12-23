@@ -3,6 +3,7 @@ import { X, Upload, Loader } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './UploadModal.css';
 import watermarkImg from '../assets/watermark.png';
+import { compressImage } from '../utils/imageCompression';
 
 const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'Other'];
 
@@ -34,23 +35,28 @@ const UploadModal = ({ onClose, onUploadSuccess }) => {
         setError(null);
 
         try {
-            // 1. Upload image to Supabase Storage
-            const fileExt = file.name.split('.').pop();
+            // 1. Compress the image before uploading
+            const compressedBlob = await compressImage(file, 0.5); // 50% quality
+
+            // 2. Upload compressed image to Supabase Storage
+            const fileExt = 'jpg'; // Always use jpg after compression
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('images')
-                .upload(filePath, file);
+                .upload(filePath, compressedBlob, {
+                    contentType: 'image/jpeg'
+                });
 
             if (uploadError) throw uploadError;
 
-            // 2. Get Public URL
+            // 3. Get Public URL
             const { data: { publicUrl } } = supabase.storage
                 .from('images')
                 .getPublicUrl(filePath);
 
-            // 3. Insert into Database
+            // 4. Insert into Database
             const { data, error: dbError } = await supabase
                 .from('cards')
                 .insert([
