@@ -125,19 +125,37 @@ function App() {
         return;
       }
 
-      // Extract filename from URL
+      // Extract filename from URL - handle Supabase URL format
       const imageUrl = cardToDelete.image_url;
-      const urlParts = imageUrl.split('/');
-      const fileName = urlParts[urlParts.length - 1];
+      console.log('Deleting image URL:', imageUrl);
+
+      // Supabase URL format: https://[project].supabase.co/storage/v1/object/public/images/filename.jpg
+      // Extract just the filename after 'images/'
+      let fileName = '';
+
+      if (imageUrl.includes('/images/')) {
+        const parts = imageUrl.split('/images/');
+        fileName = parts[1].split('?')[0]; // Remove query parameters if any
+      } else {
+        // Fallback: get last part of URL
+        const urlParts = imageUrl.split('/');
+        fileName = urlParts[urlParts.length - 1].split('?')[0];
+      }
+
+      // Decode URL encoding if present
+      fileName = decodeURIComponent(fileName);
+      console.log('Extracted filename:', fileName);
 
       // 1. Delete from Supabase Storage
-      const { error: storageError } = await supabase.storage
+      const { data: storageData, error: storageError } = await supabase.storage
         .from('images')
         .remove([fileName]);
 
       if (storageError) {
         console.error('Storage deletion error:', storageError);
-        // Continue with database deletion even if storage fails
+        alert('Warning: Failed to delete image from storage. Continuing with database deletion...');
+      } else {
+        console.log('Storage deletion successful:', storageData);
       }
 
       // 2. Delete from Database
@@ -146,10 +164,15 @@ function App() {
         .delete()
         .eq('id', cardId);
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database deletion error:', dbError);
+        throw dbError;
+      }
+
+      console.log('Database deletion successful');
 
       // 3. Update local state
-      setCards(cards.filter(card => card.id !== cardId));
+      setCards(prevCards => prevCards.filter(card => card.id !== cardId));
       setSelectedCard(null);
 
       alert('Image deleted successfully!');
