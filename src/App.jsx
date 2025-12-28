@@ -7,7 +7,7 @@ import UploadModal from './components/UploadModal';
 import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
-const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time'];
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'JANA NAYAGAN'];
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -125,57 +125,61 @@ function App() {
         return;
       }
 
-      // Extract filename from URL - handle Supabase URL format
-      const imageUrl = cardToDelete.image_url;
-      console.log('Deleting image URL:', imageUrl);
+      console.log('Attempting to delete card:', cardId);
 
-      // Supabase URL format: https://[project].supabase.co/storage/v1/object/public/images/filename.jpg
-      // Extract just the filename after 'images/'
-      let fileName = '';
-
-      if (imageUrl.includes('/images/')) {
-        const parts = imageUrl.split('/images/');
-        fileName = parts[1].split('?')[0]; // Remove query parameters if any
-      } else {
-        // Fallback: get last part of URL
-        const urlParts = imageUrl.split('/');
-        fileName = urlParts[urlParts.length - 1].split('?')[0];
-      }
-
-      // Decode URL encoding if present
-      fileName = decodeURIComponent(fileName);
-      console.log('Extracted filename:', fileName);
-
-      // 1. Delete from Supabase Storage
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from('images')
-        .remove([fileName]);
-
-      if (storageError) {
-        console.error('Storage deletion error:', storageError);
-        alert('Warning: Failed to delete image from storage. Continuing with database deletion...');
-      } else {
-        console.log('Storage deletion successful:', storageData);
-      }
-
-      // 2. Delete from Database
-      const { error: dbError } = await supabase
+      // 1. Delete from Database FIRST (Optimization: if this fails, don't delete image yet)
+      // We chain .select() to ensure we get the deleted record back. 
+      // If RLS blocks it, this will likely return empty data or an error.
+      const { data: deletedData, error: dbError } = await supabase
         .from('cards')
         .delete()
-        .eq('id', cardId);
+        .eq('id', cardId)
+        .select();
 
       if (dbError) {
         console.error('Database deletion error:', dbError);
         throw dbError;
       }
 
-      console.log('Database deletion successful');
+      // VITAL CHECK: If no rows were returned, nothing was deleted (silent RLS failure)
+      if (!deletedData || deletedData.length === 0) {
+        console.error('Delete operation returned no data. Possible RLS policy violation.');
+        throw new Error('Permission denied: Unable to delete this card. Please check your admin privileges.');
+      }
 
-      // 3. Update local state
+      console.log('Database deletion successful, removed:', deletedData);
+
+      // 2. Delete from Supabase Storage
+      const imageUrl = cardToDelete.image_url;
+      // ... existing filename extraction ...
+      let fileName = '';
+      if (imageUrl.includes('/images/')) {
+        const parts = imageUrl.split('/images/');
+        fileName = parts[1].split('?')[0];
+      } else {
+        const urlParts = imageUrl.split('/');
+        fileName = urlParts[urlParts.length - 1].split('?')[0];
+      }
+      fileName = decodeURIComponent(fileName);
+
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from('images')
+        .remove([fileName]);
+
+      if (storageError) {
+        console.error('Storage deletion error:', storageError);
+        // We don't throw here to avoid "undeleting" the DB record effectively 
+        // (though ideally we'd use transactions, but simple flow is okay for now)
+        alert('Card deleted, but image file cleanup failed: ' + storageError.message);
+      } else {
+        console.log('Storage deletion successful');
+      }
+
+      // 3. Update local state ONLY on success
       setCards(prevCards => prevCards.filter(card => card.id !== cardId));
       setSelectedCard(null);
 
-      alert('Image deleted successfully!');
+      alert('Image deleted successfully and permanently!');
     } catch (error) {
       console.error('Delete error:', error);
       alert('Failed to delete image: ' + error.message);
@@ -538,6 +542,8 @@ function App() {
                   prompt={item.prompt}
                   onClick={() => setSelectedCard(item)}
                   style={{ animationDelay: `${index * 0.1}s` }}
+                  isAdmin={!!session}
+                  onDelete={() => handleDelete(item.id)}
                 />
               ))}
             </Grid>

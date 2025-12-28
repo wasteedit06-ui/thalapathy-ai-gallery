@@ -3,7 +3,9 @@ import PromptDisplay from './PromptDisplay';
 import './ImageCard.css';
 import watermarkImg from '../assets/watermark.png';
 
-const ImageCard = ({ image, prompt, onClick, style }) => {
+import { Trash2 } from 'lucide-react';
+
+const ImageCard = ({ image, prompt, onClick, style, isAdmin, onDelete }) => {
     return (
         <div
             className="image-card"
@@ -26,6 +28,20 @@ const ImageCard = ({ image, prompt, onClick, style }) => {
                 <div className="image-overlay">
                     <span>View Fullscreen</span>
                 </div>
+                {isAdmin && (
+                    <button
+                        className="card-delete-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm('Are you sure you want to delete this image permanently?')) {
+                                onDelete();
+                            }
+                        }}
+                        title="Delete Image"
+                    >
+                        <Trash2 size={20} />
+                    </button>
+                )}
             </div>
             <PromptDisplay prompt={prompt} />
         </div>

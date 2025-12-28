@@ -5,7 +5,7 @@ import './UploadModal.css';
 import watermarkImg from '../assets/watermark.png';
 import { compressImage } from '../utils/imageCompression';
 
-const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'Other'];
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'JANA NAYAGAN', 'Other'];
 
 const UploadModal = ({ onClose, onUploadSuccess }) => {
     const [prompt, setPrompt] = useState('');
