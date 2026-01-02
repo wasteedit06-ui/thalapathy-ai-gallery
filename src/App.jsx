@@ -7,7 +7,7 @@ import UploadModal from './components/UploadModal';
 import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
-const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'JANA NAYAGAN'];
+
 
 function App() {
   const [cards, setCards] = useState([]);
@@ -18,6 +18,10 @@ function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBlurred, setIsBlurred] = useState(false);
+
+  // Dynamic Categories
+  const DEFAULT_CATEGORIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'JANA NAYAGAN'];
+  const uniqueCategories = [...new Set([...DEFAULT_CATEGORIES, ...cards.map(card => card.category)])].filter(Boolean);
 
   const filteredCards = cards.filter(card => card.category === activeCategory);
 
@@ -416,7 +420,7 @@ function App() {
             marginBottom: '3rem',
             padding: '0.5rem',
           }}>
-            {MOVIES.map(movie => (
+            {uniqueCategories.map(movie => (
               <button
                 key={movie}
                 onClick={() => setActiveCategory(movie)}

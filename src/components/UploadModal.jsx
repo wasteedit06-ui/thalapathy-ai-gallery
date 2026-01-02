@@ -5,7 +5,7 @@ import './UploadModal.css';
 import watermarkImg from '../assets/watermark.png';
 import { compressImage } from '../utils/imageCompression';
 
-const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'JANA NAYAGAN', 'Other'];
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'JANA NAYAGAN', 'Other'];
 
 const UploadModal = ({ onClose, onUploadSuccess }) => {
     const [prompt, setPrompt] = useState('');
@@ -122,14 +122,31 @@ const UploadModal = ({ onClose, onUploadSuccess }) => {
                     <div className="form-group">
                         <label>Movie Category</label>
                         <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            value={category === 'Other' || !MOVIES.includes(category) ? 'Other' : category}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === 'Other') {
+                                    setCategory('Other');
+                                } else {
+                                    setCategory(val);
+                                }
+                            }}
                             className="category-select"
                         >
                             {MOVIES.map(movie => (
                                 <option key={movie} value={movie}>{movie}</option>
                             ))}
                         </select>
+                        {(category === 'Other' || !MOVIES.includes(category)) && (
+                            <input
+                                type="text"
+                                placeholder="Enter proper category name..."
+                                value={category === 'Other' ? '' : category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="prompt-input"
+                                style={{ marginTop: '0.5rem' }}
+                            />
+                        )}
                     </div>
 
                     <div className="form-group">
