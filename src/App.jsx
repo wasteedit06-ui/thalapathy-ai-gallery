@@ -7,7 +7,7 @@ import UploadModal from './components/UploadModal';
 import LoginModal from './components/LoginModal';
 import { supabase } from './supabaseClient';
 
-const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'The Greatest Of All Time', 'JANA NAYAGAN'];
+const MOVIES = ['GOAT', 'Leo', 'Master', 'Beast', 'Varisu', 'Bigil', 'Mersal', 'Sarkar', 'JANA NAYAGAN'];
 
 function App() {
   const [cards, setCards] = useState([]);
